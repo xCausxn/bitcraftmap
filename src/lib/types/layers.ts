@@ -12,6 +12,7 @@ export type LayerName =
 	| 'towersLayer'
 	| 'waypointsLayer'
 	| 'roadsLayer'
+	| 'windLayer'
 	| `claimT${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10}Layer`
 	| `caveT${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10}Layer`;
 
@@ -36,7 +37,8 @@ export const LAYER_GROUPS: Record<string, LayerGroupDef> = {
 			'Grids',
 			'Dungeons',
 			'Watchtowers',
-			'Waypoints'
+			'Waypoints',
+			'Wind'
 		]
 	},
 	claims: {

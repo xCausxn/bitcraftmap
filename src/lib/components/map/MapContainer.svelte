@@ -24,6 +24,7 @@
   import { validateGeoJson } from "$lib/map/geojson-validator";
   import { paintGeoJson, type PaintContext } from "$lib/map/geojson-painter";
   import { ResourceCanvasLayer } from "$lib/map/resource-canvas-layer";
+  import { WindCanvasLayer } from "$lib/map/wind-canvas-layer";
   import { getLodEnabled } from "$lib/stores/settings-store.svelte";
   import {
     setMap,
@@ -111,6 +112,7 @@
   let hexiteLayer: L.LayerGroup;
   let waypointsLayer: L.LayerGroup;
   let roadsLayer: L.LayerGroup;
+  let windLayer: L.LayerGroup;
   let claimLayers: L.LayerGroup[];
   let caveLayers: L.LayerGroup[];
   let allClaims: L.LayerGroup;
@@ -298,6 +300,7 @@
       return L.latLngBounds(roadsBounds).overlaps(tileBounds);
     };
     roadsLayer = L.layerGroup([roadsTileLayer]);
+    windLayer = L.layerGroup([new WindCanvasLayer() as unknown as L.Layer]);
 
     // Live tracking layer
     liveLayer = L.featureGroup().addTo(map);
@@ -339,6 +342,7 @@
       "Caves T9": caveLayers[8],
       "Caves T10": caveLayers[9],
       Roads: roadsLayer,
+      Wind: windLayer,
     };
 
     allLayers = {
@@ -354,6 +358,7 @@
       dungeonsLayer,
       towersLayer,
       roadsLayer,
+      windLayer,
       claimT0Layer: claimLayers[0],
       claimT1Layer: claimLayers[1],
       claimT2Layer: claimLayers[2],
