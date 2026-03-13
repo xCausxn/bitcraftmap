@@ -35,7 +35,6 @@ const ARROW_LENGTH = 18;
 const ARROW_HEAD = 5;
 const ARROW_HEAD_ANGLE = 0.5;
 const WORLD_SCALE = 1;
-const TIME_ROUND_MS = 3_600_000;
 
 let windConfig: WindConfig = DEFAULT_CONFIG;
 let noise4D = makeNoise4D(windConfig.seed);
@@ -94,7 +93,7 @@ function computeWindAngle(worldX: number, worldY: number, timeMs: number): numbe
 export class WindCanvasLayer extends L.Layer {
 	private _canvas!: HTMLCanvasElement;
 	private _ctx!: CanvasRenderingContext2D;
-	private _lastBoundsKey = '';
+	private _rafId: number | null = null;
 
 	onAdd(map: L.Map): this {
 		this._canvas = L.DomUtil.create('canvas', 'wind-canvas-layer') as HTMLCanvasElement;
@@ -106,7 +105,10 @@ export class WindCanvasLayer extends L.Layer {
 
 		map.on('moveend', this._onMoveEnd, this);
 
-		loadWindConfig().then(() => this._reset());
+		loadWindConfig().then(() => {
+			this._reset();
+			this._animate();
+		});
 
 		return this;
 	}
@@ -114,11 +116,21 @@ export class WindCanvasLayer extends L.Layer {
 	onRemove(map: L.Map): this {
 		map.off('moveend', this._onMoveEnd, this);
 
+		if (this._rafId !== null) {
+			cancelAnimationFrame(this._rafId);
+			this._rafId = null;
+		}
+
 		if (this._canvas.parentNode) {
 			this._canvas.parentNode.removeChild(this._canvas);
 		}
 
 		return this;
+	}
+
+	private _animate(): void {
+		this._redraw();
+		this._rafId = requestAnimationFrame(() => this._animate());
 	}
 
 	private _onMoveEnd(): void {
@@ -132,17 +144,10 @@ export class WindCanvasLayer extends L.Layer {
 		const topLeft = this._map.containerPointToLayerPoint([0, 0]);
 		L.DomUtil.setPosition(this._canvas, topLeft);
 
-		const p0 = this._map.latLngToContainerPoint([0, 0]);
-		const key = `${Math.round(p0.x)},${Math.round(p0.y)},${size.x},${size.y}`;
-		if (key === this._lastBoundsKey) return;
-		this._lastBoundsKey = key;
-
 		if (this._canvas.width !== size.x || this._canvas.height !== size.y) {
 			this._canvas.width = size.x;
 			this._canvas.height = size.y;
 		}
-
-		this._redraw();
 	}
 
 	private _redraw(): void {
@@ -153,7 +158,7 @@ export class WindCanvasLayer extends L.Layer {
 		const ctx = this._ctx;
 		ctx.clearRect(0, 0, size.x, size.y);
 
-		const now = Math.round(Date.now() / TIME_ROUND_MS) * TIME_ROUND_MS;
+		const now = Date.now();
 		const halfLen = ARROW_LENGTH / 2;
 
 		ctx.lineWidth = 1.5;
