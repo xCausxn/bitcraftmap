@@ -141,8 +141,6 @@ export class WindCanvasLayer extends L.Layer {
 		if (!this._map) return;
 
 		const size = this._map.getSize();
-		const topLeft = this._map.containerPointToLayerPoint([0, 0]);
-		L.DomUtil.setPosition(this._canvas, topLeft);
 
 		if (this._canvas.width !== size.x || this._canvas.height !== size.y) {
 			this._canvas.width = size.x;
@@ -156,6 +154,11 @@ export class WindCanvasLayer extends L.Layer {
 
 		const size = map.getSize();
 		const ctx = this._ctx;
+
+		// Position canvas to cover the current viewport
+		const topLeft = map.containerPointToLayerPoint([0, 0]);
+		L.DomUtil.setPosition(this._canvas, topLeft);
+
 		ctx.clearRect(0, 0, size.x, size.y);
 
 		const now = Date.now();
@@ -164,11 +167,34 @@ export class WindCanvasLayer extends L.Layer {
 		ctx.lineWidth = 1.5;
 		ctx.lineCap = 'round';
 
-		for (let px = GRID_SPACING_PX / 2; px < size.x; px += GRID_SPACING_PX) {
-			for (let py = GRID_SPACING_PX / 2; py < size.y; py += GRID_SPACING_PX) {
-				const latlng = map.containerPointToLatLng([px, py]);
-				const worldX = latlng.lng * WORLD_SCALE;
-				const worldY = latlng.lat * WORLD_SCALE;
+		// Compute a world-aligned grid: snap to world coordinates so arrows stay fixed
+		const bounds = map.getBounds();
+		const topLeftWorld = bounds.getNorthWest();
+		const bottomRightWorld = bounds.getSouthEast();
+
+		// Determine world-space grid spacing from screen spacing
+		const centerLatLng = map.getCenter();
+		const p1 = map.latLngToContainerPoint(centerLatLng);
+		const p2 = L.point(p1.x + GRID_SPACING_PX, p1.y);
+		const ll2 = map.containerPointToLatLng(p2);
+		const worldStep = Math.abs(ll2.lng - centerLatLng.lng);
+
+		if (worldStep === 0) return;
+
+		// Snap grid origin to world coordinates
+		const startX = Math.floor(topLeftWorld.lng / worldStep) * worldStep;
+		const startY = Math.floor(bottomRightWorld.lat / worldStep) * worldStep;
+		const endX = topLeftWorld.lng + (bottomRightWorld.lng - topLeftWorld.lng) + worldStep;
+		const endY = topLeftWorld.lat + worldStep;
+
+		for (let wx = startX; wx <= endX; wx += worldStep) {
+			for (let wy = startY; wy <= endY; wy += worldStep) {
+				const screenPt = map.latLngToContainerPoint([wy, wx]);
+				const px = screenPt.x;
+				const py = screenPt.y;
+
+				const worldX = wx * WORLD_SCALE;
+				const worldY = wy * WORLD_SCALE;
 
 				const angle = computeWindAngle(worldX, worldY, now);
 				const hue = (angle * 180) / Math.PI;
