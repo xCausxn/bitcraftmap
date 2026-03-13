@@ -34,12 +34,14 @@ export const LAYER_GROUPS: Record<string, LayerGroupDef> = {
 			'Banks',
 			'Markets',
 			'Waystones',
-			'Grids',
 			'Dungeons',
 			'Watchtowers',
-			'Waypoints',
-			'Wind'
+			'Waypoints'
 		]
+	},
+	overlays: {
+		title: 'Overlays',
+		layers: ['Roads', 'Grids', 'Wind']
 	},
 	claims: {
 		title: 'Claims',
