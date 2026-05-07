@@ -97,6 +97,9 @@
   let coords = $state("N: 0 E: 0");
   const regionState = getRegionState();
 
+  let terrainTileLayer: L.TileLayer | undefined;
+  let gameTileLayer: L.TileLayer | undefined;
+
   // All layers
   let eventsLayer: L.LayerGroup;
   let treesLayer: L.LayerGroup;
@@ -125,9 +128,30 @@
   let genericToggle = $state<Record<string, L.LayerGroup>>({});
   let activeLayers = new SvelteSet<string>();
   let allLayers: Record<string, L.LayerGroup> = {};
+  let activeBaseLayer = $state<"terrain" | "game">("terrain");
 
   const LAYERS_STORAGE_KEY = "activeLayers";
   const DEFAULT_LAYERS = ["Events", "Wonders", "Temples", "Ruined Cities"];
+
+  const BASELAYER_STORAGE_KEY = "activeBaseLayer";
+
+  // Base layer state
+  function loadBaseLayerPreference(): "terrain" | "game" {
+    try {
+      const stored = localStorage.getItem(BASELAYER_STORAGE_KEY);
+      return stored === "game" ? "game" : "terrain";
+    } catch {
+      return "terrain";
+    }
+  }
+
+  function saveBaseLayerPreference(layer: "terrain" | "game"): void {
+    try {
+      localStorage.setItem(BASELAYER_STORAGE_KEY, layer);
+    } catch {
+      /* ignore */
+    }
+  }
 
   function loadActiveLayers(): string[] | null {
     try {
@@ -192,14 +216,15 @@
     map.createPane("popupOnTop");
     map.getPane("popupOnTop")!.style.zIndex = "990";
 
-    // Base terrain layer — placed in baseMapPane (below tilePane) so road tiles render on top
-    const terrainBounds: L.LatLngBoundsExpression = [
+    // Helper to create a tile layer for a given style
+    const terrainBounds = L.latLngBounds([
       [0, 0],
       [mapConfig.mapHeight, mapConfig.mapWidth],
-    ];
-    if (env.PUBLIC_CDN_MAP === 'true') {
-      const terrainTileLayer = L.tileLayer(
-        `${appConfig.exportsCdn}/bitcraftmap/maps/tiles/{z}/{x}/{y}.webp`,
+    ]);
+
+    function createTileLayer(dir: string, style: string): L.TileLayer {
+      const tileLayer = L.tileLayer(
+        `${appConfig.exportsCdn}/${dir}${style ? "/" + style : ""}/tiles/{z}/{x}/{y}.webp`,
         {
           bounds: terrainBounds,
           minZoom: -5,
@@ -213,15 +238,31 @@
           pane: "baseMapPane",
         },
       );
-      (terrainTileLayer as any)._isValidTile = function (coords: {
+      (tileLayer as any)._isValidTile = function (coords: {
         x: number;
         y: number;
         z: number;
       }) {
         const tileBounds = (this as any)._tileCoordsToBounds(coords);
-        return L.latLngBounds(terrainBounds).overlaps(tileBounds);
+        return terrainBounds.overlaps(tileBounds);
       };
-      terrainTileLayer.addTo(map);
+      return tileLayer;
+    }
+
+    // Base layer initialization
+    activeBaseLayer = loadBaseLayerPreference();
+
+    // Create base layers
+    if (env.PUBLIC_CDN_MAP === 'true') {
+      terrainTileLayer = createTileLayer("maps", "terrain");
+      gameTileLayer = createTileLayer("maps", "game");
+
+      // Add the active base layer to the map
+      if (activeBaseLayer === "terrain") {
+        terrainTileLayer.addTo(map);
+      } else {
+        gameTileLayer.addTo(map);
+      }
     } else {
       L.imageOverlay('/assets/maps/map.webp', terrainBounds, {
         pane: 'baseMapPane',
@@ -271,33 +312,7 @@
     allClaims = L.layerGroup(claimLayers);
     allCaves = L.layerGroup(caveLayers);
 
-    const roadsBounds: L.LatLngBoundsExpression = [
-      [0, 0],
-      [mapConfig.mapHeight, mapConfig.mapWidth],
-    ];
-    const roadsTileLayer = L.tileLayer(
-      `${appConfig.exportsCdn}/bitcraftmap/roads/tiles/{z}/{x}/{y}.webp`,
-      {
-        bounds: roadsBounds,
-        minZoom: -5,
-        maxZoom: 5,
-        minNativeZoom: -5,
-        maxNativeZoom: 0,
-        tileSize: 256,
-        keepBuffer: 4,
-        updateWhenZooming: false,
-        errorTileUrl: "",
-      },
-    );
-    (roadsTileLayer as any)._isValidTile = function (coords: {
-      x: number;
-      y: number;
-      z: number;
-    }) {
-      const tileBounds = (this as any)._tileCoordsToBounds(coords);
-      return L.latLngBounds(roadsBounds).overlaps(tileBounds);
-    };
-    roadsLayer = L.layerGroup([roadsTileLayer]);
+    roadsLayer = L.layerGroup([createTileLayer("roads", "")]);
 
     // Live tracking layer
     liveLayer = L.featureGroup().addTo(map);
@@ -419,29 +434,40 @@
       );
     });
 
+    function handlePopupClick(ev: MouseEvent) {
+      const btn = (ev.target as HTMLElement).closest(
+              "[data-action]",
+      ) as HTMLElement | null;
+      if (!btn) return;
+      const action = btn.dataset.action;
+      if (action === "track-resource") {
+        const id = Number(btn.dataset.resourceId);
+        const name = btn.dataset.resourceName ?? "";
+        const tier = Number(btn.dataset.resourceTier);
+        if (id) handleResourceSelect(id, name, tier);
+        map.closePopup();
+      } else if (action === "follow-player") {
+        const entityId = btn.dataset.entityId ?? "";
+        if (entityId) {
+          if (followingPlayerId == entityId) {
+            followingPlayerId = null;
+          } else {
+            followingPlayerId = entityId;
+            const existing = playerStore.get(entityId);
+            if (existing) { // should always be true if we just clicked follow on their marker
+              map.flyTo(existing.getLatLng(), map.getZoom());
+            }
+          }
+        }
+        map.closePopup();
+      }
+    }
+
     // Handle action buttons inside Leaflet popups
     map.on("popupopen", (e: L.PopupEvent) => {
       const container = e.popup.getElement();
       if (!container) return;
-      container.addEventListener("click", (ev) => {
-        const btn = (ev.target as HTMLElement).closest(
-          "[data-action]",
-        ) as HTMLElement | null;
-        if (!btn) return;
-        const action = btn.dataset.action;
-        if (action === "track-resource") {
-          const id = Number(btn.dataset.resourceId);
-          const name = btn.dataset.resourceName ?? "";
-          const tier = Number(btn.dataset.resourceTier);
-          if (id) handleResourceSelect(id, name, tier);
-          map.closePopup();
-        } else if (action === "follow-player") {
-          const entityId = btn.dataset.entityId ?? "";
-          const username = btn.dataset.username ?? "";
-          if (entityId) handlePlayerSelect(entityId, username);
-          map.closePopup();
-        }
-      });
+      container.addEventListener("click", handlePopupClick);
     });
 
     // Map state persistence
@@ -521,7 +547,12 @@
         .split(",")
         .map((id) => id.trim())
         .filter(Boolean);
+      let first = true;
       for (const id of playerIds) {
+        if (first && urlParams.followPlayer) {
+          first = false;
+          followingPlayerId = id;
+        }
         trackedPlayerIds.add(id);
       }
 
@@ -542,7 +573,7 @@
                 destination_x: info.locationX,
                 destination_z: info.locationZ,
               },
-              urlParams.followPlayer,
+              followingPlayerId === playerIds[i],
               loadColorPreference('player', playerIds[i]) || "#00ff00",
             );
           }
@@ -552,7 +583,7 @@
       const ws = connectWebSocket(
         playerIds,
         (state: PlayerState) => {
-          updatePlayerMarker(state, urlParams.followPlayer, loadColorPreference('player', state.entity_id) || "#00ff00");
+          updatePlayerMarker(state, followingPlayerId === state.entity_id, loadColorPreference('player', state.entity_id) || "#00ff00");
         },
         () => {
           playerInfoPromise.then((results) => {
@@ -638,6 +669,7 @@
   const destinationStore = new Map<string, L.Polyline>();
   const playerWebSockets = new Map<string, WebSocket>();
   const trackedPlayerIds = new Set<string>();
+  let followingPlayerId = $state<string | null>(null);
   const playerUsernames = new Map<string, string>();
 
   const playerColorPalette = [
@@ -677,7 +709,7 @@
           destination_x: playerInfo.locationX,
           destination_z: playerInfo.locationZ,
         },
-        false,
+        followingPlayerId == entityId,
         color,
       );
     }
@@ -685,7 +717,7 @@
     const ws = connectWebSocket(
       [entityId],
       (state: PlayerState) => {
-        updatePlayerMarker(state, false, loadColorPreference('player', entityId) || color);
+        updatePlayerMarker(state, followingPlayerId == state.entity_id, loadColorPreference('player', entityId) || color);
       },
       () => {
         addTrackingItem({
@@ -762,6 +794,7 @@
         signedIn: true,
         latlng: { lat: playerLatLng.lat, lng: playerLatLng.lng },
         color,
+        isFollowing: followingPlayerId == playerId,
       };
       marker.bindPopup(buildPopupHtml(selectionData), {
         className: "bcm-leaflet-popup",
@@ -772,7 +805,9 @@
           lat: marker.getLatLng().lat,
           lng: marker.getLatLng().lng,
         };
+        selectionData.isFollowing = followingPlayerId == playerId;
         setSelection(selectionData);
+        marker.setPopupContent(buildPopupHtml(selectionData));
       });
 
       const trail = new L.Polyline(directionLine, {
@@ -790,7 +825,8 @@
     }
 
     if (followPlayer) {
-      map.flyTo(playerLatLng, map.getZoom());
+      // use setView here instead of flyTo to workaround https://github.com/Leaflet/Leaflet/issues/9438
+      map.setView(playerLatLng, map.getZoom());
     }
   }
 
@@ -1133,6 +1169,20 @@
     return activeLayers.has(name);
   }
 
+  function handleBaseLayerChange(layer: "terrain" | "game"): void {
+    if (!terrainTileLayer || !gameTileLayer) return;
+    activeBaseLayer = layer;
+    saveBaseLayerPreference(layer);
+
+    if (layer === "terrain") {
+      map.removeLayer(gameTileLayer);
+      map.addLayer(terrainTileLayer);
+    } else {
+      map.removeLayer(terrainTileLayer);
+      map.addLayer(gameTileLayer);
+    }
+  }
+
   function handleSearchSelect(entry: {
     latlng: L.LatLng;
     layer: L.LayerGroup;
@@ -1181,6 +1231,8 @@
       {genericToggle}
       isActive={isLayerActive}
       onToggleLayer={handleToggleLayer}
+      getBaseLayer={() => activeBaseLayer}
+      onSetBaseLayer={handleBaseLayerChange}
       onToggleResource={handleToggleResourceLayer}
       onTogglePlayer={handleTogglePlayerVisibility}
       onRemoveResource={handleRemoveResource}
