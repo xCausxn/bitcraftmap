@@ -111,6 +111,7 @@
   let gridsLayer: L.LayerGroup;
   let dungeonsLayer: L.LayerGroup;
   let towersLayer: L.LayerGroup;
+  let territoriesLayer: L.LayerGroup;
   let hexiteLayer: L.LayerGroup;
   let waypointsLayer: L.LayerGroup;
   let roadsLayer: L.LayerGroup;
@@ -286,6 +287,7 @@
     gridsLayer = L.layerGroup();
     dungeonsLayer = L.layerGroup();
     towersLayer = L.layerGroup();
+    territoriesLayer = L.layerGroup();
     hexiteLayer = L.layerGroup();
     waypointsLayer = L.layerGroup();
 
@@ -329,8 +331,9 @@
       Waystones: waystonesLayer,
       Grids: gridsLayer,
       Dungeons: dungeonsLayer,
+      Territories: territoriesLayer,
       Watchtowers: towersLayer,
-      Waypoints: waypointsLayer,
+      "Custom Waypoints": waypointsLayer,
       Claims: allClaims,
       "Claims T1": claimLayers[1],
       "Claims T2": claimLayers[2],
@@ -367,6 +370,7 @@
       waystonesLayer,
       waypointsLayer,
       dungeonsLayer,
+      territoriesLayer,
       towersLayer,
       roadsLayer,
       claimT0Layer: claimLayers[0],
@@ -522,7 +526,7 @@
     loadDungeonsGeoJson(dungeonsLayer);
 
     loadGridsGeoJson(gridsLayer, paintCtx);
-    loadTowersGeoJson(towersLayer, map);
+    loadTowersGeoJson(towersLayer, territoriesLayer, map);
 
     // Load from hash / gist / backend
     loadGeoJsonFromHash(waypointsLayer, paintCtx, map);
