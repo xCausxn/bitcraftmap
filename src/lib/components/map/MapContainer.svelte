@@ -11,11 +11,13 @@
   import {
     initIcons,
     loadTreesGeoJson,
+    loadEmpireResourcesGeoJson,
     loadTemplesGeoJson,
-    loadRuinedGeoJson,
+    loadNpcsGeoJson,
     loadClaimsGeoJson,
     loadCavesGeoJson,
     loadEventsGeoJson,
+    loadUnchartedGeoJson,
     loadDungeonsGeoJson,
     loadGridsGeoJson,
     loadTowersGeoJson,
@@ -113,6 +115,10 @@
   let towersLayer: L.LayerGroup;
   let territoriesLayer: L.LayerGroup;
   let hexiteLayer: L.LayerGroup;
+  let makersTreeLayer: L.LayerGroup;
+  let geysersLayer: L.LayerGroup;
+  let hermitCrabDensLayer: L.LayerGroup;
+  let travelerCampLayer: L.LayerGroup;
   let waypointsLayer: L.LayerGroup;
   let roadsLayer: L.LayerGroup;
   let claimLayers: L.LayerGroup[];
@@ -289,6 +295,10 @@
     towersLayer = L.layerGroup();
     territoriesLayer = L.layerGroup();
     hexiteLayer = L.layerGroup();
+    makersTreeLayer = L.layerGroup();
+    geysersLayer = L.layerGroup();
+    hermitCrabDensLayer = L.layerGroup();
+    travelerCampLayer = L.layerGroup();
     waypointsLayer = L.layerGroup();
 
     claimLayers = Array.from({ length: 11 }, () => L.layerGroup());
@@ -324,8 +334,12 @@
       Events: eventsLayer,
       Wonders: treesLayer,
       "Hexite Deposits": hexiteLayer,
+      "Maker's Trees": makersTreeLayer,
       Temples: templesLayer,
       "Ruined Cities": ruinedLayer,
+      "Traveler Camps": travelerCampLayer,
+      "Volcanic Geysers": geysersLayer,
+      "Hermit Crab Dens": hermitCrabDensLayer,
       Banks: banksLayer,
       Markets: marketsLayer,
       Waystones: waystonesLayer,
@@ -363,6 +377,10 @@
       eventsLayer,
       treesLayer,
       hexiteLayer,
+      makersTreeLayer,
+      geysersLayer,
+      hermitCrabDensLayer,
+      travelerCampLayer,
       templesLayer,
       ruinedLayer,
       banksLayer,
@@ -478,24 +496,27 @@
     map.on("moveend", () => saveMapState(map));
 
     // Load GeoJSON data
-    loadTreesGeoJson(treesLayer, hexiteLayer);
+    loadTreesGeoJson(treesLayer);
+    loadEmpireResourcesGeoJson(hexiteLayer, makersTreeLayer);
     loadTemplesGeoJson(templesLayer);
-    loadRuinedGeoJson(ruinedLayer).then(() => {
-      // Add search entries for ruined cities
-      ruinedLayer.eachLayer((l) => {
-        const marker = l as L.Marker;
-        if (marker.options?.title) {
-          addSearchEntries([
-            {
-              title: marker.options.title,
-              latlng: marker.getLatLng(),
-              layer: ruinedLayer,
-              marker,
-              selectionData: (marker as any)._selectionData,
-            },
-          ]);
-        }
-      });
+    loadNpcsGeoJson(ruinedLayer, travelerCampLayer).then(() => {
+      // Add search entries for NPC claims (ruined cities + traveler camps)
+      for (const npcLayer of [ruinedLayer, travelerCampLayer]) {
+        npcLayer.eachLayer((l) => {
+          const marker = l as L.Marker;
+          if (marker.options?.title) {
+            addSearchEntries([
+              {
+                title: marker.options.title,
+                latlng: marker.getLatLng(),
+                layer: npcLayer,
+                marker,
+                selectionData: (marker as any)._selectionData,
+              },
+            ]);
+          }
+        });
+      }
     });
     loadCavesGeoJson(caveLayers);
     loadClaimsGeoJson(
@@ -522,7 +543,11 @@
         });
       }
     });
-    loadEventsGeoJson(eventsLayer, paintCtx);
+    loadEventsGeoJson(eventsLayer);
+    loadUnchartedGeoJson(
+      geysersLayer,
+      hermitCrabDensLayer,
+    );
     loadDungeonsGeoJson(dungeonsLayer);
 
     loadGridsGeoJson(gridsLayer, paintCtx);
