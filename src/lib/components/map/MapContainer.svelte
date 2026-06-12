@@ -386,7 +386,6 @@
       onRegionsChange={handleRegionsChange}
     />
     <DetailPanel
-      onTrackResource={handleResourceSelect}
       onFollowPlayer={handlePlayerSelect}
     />
   {/if}
