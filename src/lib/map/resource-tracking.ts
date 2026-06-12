@@ -43,6 +43,26 @@ function applyRegionPoints(
   }
 }
 
+/**
+ * Fetch one entity across regions, tolerating per-region failures —
+ * the backend returns 403 for regions it doesn't serve yet.
+ */
+async function fetchRegionsSettled(
+  regions: number[],
+  fetcher: (regionId: number) => Promise<GeoJSON.FeatureCollection>,
+  apply: (regionId: number, geoJson: GeoJSON.FeatureCollection) => void,
+): Promise<void> {
+  const results = await Promise.allSettled(regions.map(fetcher));
+  regions.forEach((rId, idx) => {
+    const result = results[idx];
+    if (result.status === "fulfilled") {
+      apply(rId, result.value);
+    } else {
+      console.warn(`Region ${rId} unavailable:`, result.reason);
+    }
+  });
+}
+
 function resolveResourceColor(id: number): string {
   return (
     loadColorPreference("resource", id) ||
@@ -98,13 +118,11 @@ export class ResourceTracking {
     });
 
     try {
-      const regions = this.getRegions();
-      const results = await Promise.all(
-        regions.map((rId) => fetchResource(rId, resourceId)),
+      await fetchRegionsSettled(
+        this.getRegions(),
+        (rId) => fetchResource(rId, resourceId),
+        (rId, geoJson) => applyRegionPoints(canvasLayer, rId, geoJson),
       );
-      regions.forEach((rId, idx) => {
-        applyRegionPoints(canvasLayer, rId, results[idx]);
-      });
 
       subscribeResource(resourceId);
     } catch (err) {
@@ -138,13 +156,11 @@ export class ResourceTracking {
     });
 
     try {
-      const regions = this.getRegions();
-      const results = await Promise.all(
-        regions.map((rId) => fetchEnemy(rId, enemyId)),
+      await fetchRegionsSettled(
+        this.getRegions(),
+        (rId) => fetchEnemy(rId, enemyId),
+        (rId, geoJson) => applyRegionPoints(canvasLayer, rId, geoJson),
       );
-      regions.forEach((rId, idx) => {
-        applyRegionPoints(canvasLayer, rId, results[idx]);
-      });
     } catch (err) {
       console.error(`Failed to load creature ${enemyId}:`, err);
     }
@@ -242,13 +258,20 @@ export class ResourceTracking {
     }
 
     if (fetchPromises.length === 0) return;
-    const geoJsonResults = await Promise.all(fetchPromises);
+    const geoJsonResults = await Promise.allSettled(fetchPromises);
 
-    geoJsonResults.forEach((geoJson, idx) => {
+    geoJsonResults.forEach((result, idx) => {
       const meta = geoJsonMeta[idx];
+      if (result.status !== "fulfilled") {
+        console.warn(
+          `Region ${meta.region} unavailable for ${meta.resource}:`,
+          result.reason,
+        );
+        return;
+      }
       const canvasLayer = this.resourceLayers[meta.resource];
       if (canvasLayer) {
-        applyRegionPoints(canvasLayer, meta.region, geoJson);
+        applyRegionPoints(canvasLayer, meta.region, result.value);
       }
     });
 
@@ -273,17 +296,16 @@ export class ResourceTracking {
 
     const regions = this.getRegions();
     for (const resourceId of currentTrackedIds) {
-      Promise.all(regions.map((rId) => fetchResource(rId, resourceId)))
-        .then((results) => {
+      fetchRegionsSettled(
+        regions,
+        (rId) => fetchResource(rId, resourceId),
+        (rId, geoJson) => {
           const canvasLayer = this.resourceLayers[resourceId];
-          if (!canvasLayer) return;
-          regions.forEach((rId, idx) => {
-            applyRegionPoints(canvasLayer, rId, results[idx]);
-          });
-        })
-        .catch((err) =>
-          console.error(`Failed to reload resource ${resourceId}:`, err),
-        );
+          if (canvasLayer) applyRegionPoints(canvasLayer, rId, geoJson);
+        },
+      ).catch((err) =>
+        console.error(`Failed to reload resource ${resourceId}:`, err),
+      );
     }
   }
 
