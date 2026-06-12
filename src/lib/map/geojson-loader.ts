@@ -379,7 +379,12 @@ export async function loadTowersGeoJson(
 ): Promise<void> {
   const file = await fetch(geojsonUrl("towers.geojson"));
   const geojsonData = await file.json();
-  const allFeatures = Array.isArray(geojsonData?.features) ? geojsonData.features : [];
+  // The exports CDN serves an array of per-tower FeatureCollections rather than one merged collection
+  const allFeatures: GeoJSON.Feature[] = Array.isArray(geojsonData)
+    ? geojsonData.flatMap((fc) => (Array.isArray(fc?.features) ? fc.features : []))
+    : Array.isArray(geojsonData?.features)
+      ? geojsonData.features
+      : [];
   const markerFeatures = allFeatures.filter(
     (feature: GeoJSON.Feature) => feature?.geometry?.type === "Point",
   );
