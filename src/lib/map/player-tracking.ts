@@ -264,7 +264,7 @@ export class PlayerTracking {
         color,
         isFollowing: this.followingPlayerId === playerId,
       };
-      marker.bindPopup(buildPopupHtml(selectionData), {
+      marker.bindPopup(buildPopupHtml(selectionData, this.map.getZoom()), {
         className: "bcm-leaflet-popup",
         pane: "popupOnTop",
       });
@@ -275,7 +275,9 @@ export class PlayerTracking {
         };
         selectionData.isFollowing = this.followingPlayerId === playerId;
         setSelection(selectionData);
-        marker.setPopupContent(buildPopupHtml(selectionData));
+        marker.setPopupContent(
+          buildPopupHtml(selectionData, this.map.getZoom()),
+        );
       });
 
       const trail = new L.Polyline(directionLine, {

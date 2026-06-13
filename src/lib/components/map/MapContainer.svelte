@@ -35,6 +35,10 @@
     hashHasFlyToOrZoom,
     resetView,
   } from "$lib/stores/map-store";
+  import {
+    buildChatCoordinateLink,
+    buildCoordinateViewUrl,
+  } from "$lib/utils/coordinate-links";
   import { parseUrlParams, updateRegionIdParam } from "$lib/utils/url-params";
   import { getRegionState, setRegions } from "$lib/stores/region-store.svelte";
   import { registerColorSyncHandler } from "$lib/stores/tracking-store.svelte";
@@ -56,6 +60,21 @@
   import SearchBar from "$lib/components/search/SearchBar.svelte";
   import Sidebar from "$lib/components/sidebar/Sidebar.svelte";
   import DetailPanel from "$lib/components/detail/DetailPanel.svelte";
+
+  function showPopupCopyFeedback(btn: HTMLElement): void {
+    const originalIcon = btn.dataset.icon ?? btn.textContent ?? "";
+    btn.classList.add("is-copied");
+    btn.textContent = "✓";
+    btn.title = "Copied!";
+    window.setTimeout(() => {
+      btn.classList.remove("is-copied");
+      btn.textContent = originalIcon;
+      const action = btn.dataset.action;
+      btn.title = action === "copy-chat-coords"
+        ? "Copy in-game chat link to coordinates"
+        : "Copy website link to coordinates";
+    }, 1200);
+  }
 
   let mapElement: HTMLDivElement;
   let map = $state<L.Map>(undefined!);
@@ -251,6 +270,28 @@
       const entityId = btn.dataset.entityId ?? "";
       if (entityId) playerTracking.toggleFollow(entityId);
       map.closePopup();
+    } else if (action === "copy-view-coords") {
+      const n = Number(btn.dataset.n);
+      const e = Number(btn.dataset.e);
+      const z = Number(btn.dataset.z);
+      if (
+        !Number.isFinite(n) ||
+        !Number.isFinite(e) ||
+        !Number.isFinite(z) ||
+        !navigator.clipboard
+      )
+        return;
+      navigator.clipboard
+        .writeText(buildCoordinateViewUrl({ n, e, z }))
+        .then(() => showPopupCopyFeedback(btn));
+    } else if (action === "copy-chat-coords") {
+      const n = Number(btn.dataset.n);
+      const e = Number(btn.dataset.e);
+      if (!Number.isFinite(n) || !Number.isFinite(e) || !navigator.clipboard)
+        return;
+      navigator.clipboard
+        .writeText(buildChatCoordinateLink({ n, e }))
+        .then(() => showPopupCopyFeedback(btn));
     }
   }
 
