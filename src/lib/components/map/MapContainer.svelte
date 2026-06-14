@@ -53,6 +53,7 @@
     type ResourceUpdateContext,
   } from "$lib/services/resource-update-handler";
   import { setSelection } from "$lib/stores/selection-store.svelte";
+  import { addLayerEntries } from "$lib/stores/search-store.svelte";
 
   import CoordinateDisplay from "./CoordinateDisplay.svelte";
   import ResetViewButton from "./ResetViewButton.svelte";
@@ -163,6 +164,14 @@
     resourceTracking = new ResourceTracking(
       map,
       () => regionState.effectiveRegions,
+    );
+
+    addLayerEntries(
+      Object.entries(genericToggle).map(([title, layer]) => ({
+        title,
+        layer,
+        type: "layer" as const,
+      })),
     );
 
     paintCtx = { map, allLayers: layers.allLayers };
@@ -371,7 +380,7 @@
   }
 
   function handleSearchSelect(entry: {
-    latlng: L.LatLng;
+    latlng?: L.LatLng;
     layer: L.LayerGroup;
     selectionData?: import("$lib/types/map").MapSelection;
   }): void {
@@ -386,9 +395,11 @@
       }
       saveActiveLayerNames(activeLayers);
     }
-    // Zoom in to at least 1 so the selected marker is identifiable
-    const targetZoom = Math.max(map.getZoom(), 1);
-    map.flyTo(entry.latlng, targetZoom);
+    if (entry.latlng) {
+      // Zoom in to at least 1 so the selected marker is identifiable
+      const targetZoom = Math.max(map.getZoom(), 1);
+      map.flyTo(entry.latlng, targetZoom);
+    }
     if (entry.selectionData) {
       setSelection(entry.selectionData);
     }
