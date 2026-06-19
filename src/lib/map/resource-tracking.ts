@@ -83,6 +83,13 @@ function resolveCreatureColor(id: number): string {
   );
 }
 
+export interface TrackOptions {
+  /** Skip writing the id back into the `?resourceId=`/`?enemyId=` params. */
+  updateUrl?: boolean;
+  /** Ignore tier/index colours and use the default blue. */
+  noColors?: boolean;
+}
+
 export class ResourceTracking {
   /**
    * Resource and enemy ids come from separate id spaces that overlap heavily,
@@ -102,16 +109,20 @@ export class ResourceTracking {
     resourceId: number,
     name: string,
     tier: number,
+    options: TrackOptions = {},
   ): Promise<void> {
     if (this.resourceLayers[resourceId]) return; // already loaded
 
     this.trackedResourceIds.add(resourceId);
-    updateResourceIdParam(this.trackedResourceIds);
+    if (options.updateUrl !== false) {
+      updateResourceIdParam(this.trackedResourceIds);
+    }
 
-    const color =
-      loadColorPreference("resource", resourceId) ||
-      tierColors[tier] ||
-      "#3388ff";
+    const color = options.noColors
+      ? "#3388ff"
+      : loadColorPreference("resource", resourceId) ||
+        tierColors[tier] ||
+        "#3388ff";
     const canvasLayer = this.addCanvasLayer(
       "resource",
       resourceId,
@@ -145,17 +156,21 @@ export class ResourceTracking {
     enemyId: number,
     name: string,
     tier: number,
+    options: TrackOptions = {},
   ): Promise<void> {
     if (this.enemyLayers[enemyId]) return; // already loaded
 
     this.trackedEnemyIds.add(enemyId);
-    updateEnemyIdParam(this.trackedEnemyIds);
+    if (options.updateUrl !== false) {
+      updateEnemyIdParam(this.trackedEnemyIds);
+    }
 
-    const color =
-      loadColorPreference("enemy", enemyId) ||
-      creatureIndex[enemyId]?.color ||
-      tierColors[tier] ||
-      "#3388ff";
+    const color = options.noColors
+      ? "#3388ff"
+      : loadColorPreference("enemy", enemyId) ||
+        creatureIndex[enemyId]?.color ||
+        tierColors[tier] ||
+        "#3388ff";
     const canvasLayer = this.addCanvasLayer(
       "enemy",
       enemyId,

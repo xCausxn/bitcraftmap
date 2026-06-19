@@ -18,7 +18,10 @@
   import { loadStaticGeoJsonLayers } from "$lib/map/static-layers";
   import { setupCoordinateDisplay } from "$lib/map/coordinate-display";
   import { PlayerTracking } from "$lib/map/player-tracking";
-  import { ResourceTracking } from "$lib/map/resource-tracking";
+  import {
+    ResourceTracking,
+    type TrackOptions,
+  } from "$lib/map/resource-tracking";
   import {
     DEFAULT_LAYERS,
     loadBaseLayerPreference,
@@ -41,7 +44,15 @@
   } from "$lib/utils/coordinate-links";
   import { parseUrlParams, updateRegionIdParam } from "$lib/utils/url-params";
   import { getRegionState, setRegions } from "$lib/stores/region-store.svelte";
-  import { registerColorSyncHandler } from "$lib/stores/tracking-store.svelte";
+  import {
+    loadFavorites,
+    registerColorSyncHandler,
+  } from "$lib/stores/tracking-store.svelte";
+  import {
+    creatureIndex,
+    resourceIndex,
+    resourceIndexOverride,
+  } from "$lib/data/resource-index";
   import { getLatestGistRaw } from "$lib/services/gist-service";
   import {
     setResourceEventCallback,
@@ -217,15 +228,21 @@
         .catch(console.error);
     }
 
-    // Backend resource/enemy loading
-    resourceTracking
-      .loadFromUrl(urlParams.resourceId, urlParams.enemyId, urlParams.noColors)
-      .catch(console.error);
+    // Load URL-backed tracking first, then apply persisted favorites.
+    (async () => {
+      await resourceTracking.loadFromUrl(
+        urlParams.resourceId,
+        urlParams.enemyId,
+        urlParams.noColors,
+      );
 
-    // WebSocket player tracking from URL params
-    if (urlParams.playerId) {
-      playerTracking.trackFromUrl(urlParams.playerId, urlParams.followPlayer);
-    }
+      // WebSocket player tracking from URL params
+      if (urlParams.playerId) {
+        playerTracking.trackFromUrl(urlParams.playerId, urlParams.followPlayer);
+      }
+
+      await loadFavoriteTracking(urlParams.noColors);
+    })().catch(console.error);
 
     // Restore map state
     if (urlParams.center) {
@@ -315,16 +332,18 @@
     resourceId: number,
     name: string,
     tier: number,
+    options: TrackOptions = {},
   ): Promise<void> {
-    return resourceTracking.trackResource(resourceId, name, tier);
+    return resourceTracking.trackResource(resourceId, name, tier, options);
   }
 
   function handleCreatureSelect(
     enemyId: number,
     name: string,
     tier: number,
+    options: TrackOptions = {},
   ): Promise<void> {
-    return resourceTracking.trackCreature(enemyId, name, tier);
+    return resourceTracking.trackCreature(enemyId, name, tier, options);
   }
 
   function handleTogglePlayerVisibility(entityId: string): void {
@@ -352,6 +371,34 @@
   function handleRegionsChange(): void {
     updateRegionIdParam(regionState.selected);
     resourceTracking.reloadRegions();
+  }
+
+  /**
+   * Start tracking everything the user has favourited. Favourites are applied
+   * after URL-backed tracking so an explicit `?resourceId=` wins, and they
+   * never write themselves back into the URL.
+   */
+  async function loadFavoriteTracking(noColors: boolean): Promise<void> {
+    const options = { updateUrl: false, noColors };
+    for (const favorite of loadFavorites()) {
+      if (favorite.type === "player") {
+        await playerTracking.track(String(favorite.id), undefined, options);
+        continue;
+      }
+
+      const id = Number(favorite.id);
+      if (!Number.isFinite(id)) continue;
+      if (favorite.type === "resource") {
+        const name = resourceIndex[id]?.name || `ID ${id}`;
+        const tier =
+          resourceIndexOverride[id]?.tier || resourceIndex[id]?.tier || 0;
+        await handleResourceSelect(id, name, tier, options);
+      } else {
+        const name = creatureIndex[id]?.name || `ID ${id}`;
+        const tier = creatureIndex[id]?.tier || 0;
+        await handleCreatureSelect(id, name, tier, options);
+      }
+    }
   }
 
   function handleToggleLayer(name: string): void {

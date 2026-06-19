@@ -11,6 +11,7 @@ import {
   loadColorPreference,
 } from "$lib/stores/tracking-store.svelte";
 import { updatePlayerIdParam } from "$lib/utils/url-params";
+import type { TrackOptions } from "./resource-tracking";
 
 const PLAYER_COLOR_PALETTE = [
   "#00ff00",
@@ -116,19 +117,32 @@ export class PlayerTracking {
     }
   }
 
-  async track(entityId: string, username: string): Promise<void> {
+  /**
+   * @param username Display name if already known; otherwise it is resolved
+   *   from the player lookup.
+   */
+  async track(
+    entityId: string,
+    username?: string,
+    options: TrackOptions = {},
+  ): Promise<void> {
     if (this.trackedPlayerIds.has(entityId)) return;
     this.trackedPlayerIds.add(entityId);
-    this.playerUsernames.set(entityId, username);
-    updatePlayerIdParam(this.trackedPlayerIds);
+    if (username) this.playerUsernames.set(entityId, username);
+    if (options.updateUrl !== false) {
+      updatePlayerIdParam(this.trackedPlayerIds);
+    }
 
     const paletteColor =
       PLAYER_COLOR_PALETTE[this.colorIndex % PLAYER_COLOR_PALETTE.length];
     this.colorIndex++;
-    const color = loadColorPreference("player", entityId) || paletteColor;
+    const color = options.noColors
+      ? "#3388ff"
+      : loadColorPreference("player", entityId) || paletteColor;
 
     // Fetch initial location from API
     const playerInfo = await lookupPlayer(entityId);
+    if (!username) this.playerUsernames.set(entityId, playerInfo.username);
     if (playerInfo.locationX !== null && playerInfo.locationZ !== null) {
       this.updateMarker(
         {
