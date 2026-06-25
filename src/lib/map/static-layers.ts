@@ -57,7 +57,11 @@ export function loadStaticGeoJsonLayers(
     registerMarkerSearchEntries(layers.claimLayers);
   });
   loadEventsGeoJson(layers.eventsLayer);
-  loadUnchartedGeoJson(layers.geysersLayer, layers.hermitCrabDensLayer);
+  loadUnchartedGeoJson(
+    layers.geysersLayer,
+    layers.hermitCrabDensLayer,
+    layers.shipwrecksLayer,
+  );
   loadDungeonsGeoJson(layers.dungeonsLayer);
   loadGridsGeoJson(layers.gridsLayer, paintCtx);
   loadTowersGeoJson(layers.towersLayer, layers.territoriesLayer, map);

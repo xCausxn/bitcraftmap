@@ -17,6 +17,7 @@ export interface MapLayers {
   makersTreeLayer: L.LayerGroup;
   geysersLayer: L.LayerGroup;
   hermitCrabDensLayer: L.LayerGroup;
+  shipwrecksLayer: L.LayerGroup;
   travelerCampLayer: L.LayerGroup;
   waypointsLayer: L.LayerGroup;
   roadsLayer: L.LayerGroup;
@@ -47,6 +48,7 @@ export function createMapLayers(roadsTileLayer: L.TileLayer): MapLayers {
   const makersTreeLayer = L.layerGroup();
   const geysersLayer = L.layerGroup();
   const hermitCrabDensLayer = L.layerGroup();
+  const shipwrecksLayer = L.layerGroup();
   const travelerCampLayer = L.layerGroup();
   const waypointsLayer = L.layerGroup();
 
@@ -85,6 +87,7 @@ export function createMapLayers(roadsTileLayer: L.TileLayer): MapLayers {
     "Traveler Camps": travelerCampLayer,
     "Volcanic Geysers": geysersLayer,
     "Hermit Crab Dens": hermitCrabDensLayer,
+    Shipwrecks: shipwrecksLayer,
     Banks: banksLayer,
     Markets: marketsLayer,
     Waystones: waystonesLayer,
@@ -125,6 +128,7 @@ export function createMapLayers(roadsTileLayer: L.TileLayer): MapLayers {
     makersTreeLayer,
     geysersLayer,
     hermitCrabDensLayer,
+    shipwrecksLayer,
     travelerCampLayer,
     templesLayer,
     ruinedLayer,
@@ -175,6 +179,7 @@ export function createMapLayers(roadsTileLayer: L.TileLayer): MapLayers {
     makersTreeLayer,
     geysersLayer,
     hermitCrabDensLayer,
+    shipwrecksLayer,
     travelerCampLayer,
     waypointsLayer,
     roadsLayer,
