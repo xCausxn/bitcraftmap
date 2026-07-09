@@ -61,6 +61,8 @@ export function loadStaticGeoJsonLayers(
     layers.geysersLayer,
     layers.hermitCrabDensLayer,
     layers.shipwrecksLayer,
+    layers.unchartedRuinsLayer,
+    layers.silkmothLayer,
   );
   loadDungeonsGeoJson(layers.dungeonsLayer);
   loadGridsGeoJson(layers.gridsLayer, paintCtx);
