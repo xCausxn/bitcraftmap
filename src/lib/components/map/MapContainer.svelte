@@ -250,7 +250,7 @@
       if (type === "player") {
         playerTracking.setMarkerColor(id as string, color);
       } else {
-        resourceTracking.setColor(id as number, color);
+        resourceTracking.setColor(id as number, color, type);
       }
     });
 
@@ -335,12 +335,18 @@
     playerTracking.remove(entityId);
   }
 
-  function handleToggleResourceLayer(id: number): void {
-    resourceTracking.toggleLayer(id);
+  function handleToggleResourceLayer(
+    id: number,
+    type: "resource" | "enemy" = "resource",
+  ): void {
+    resourceTracking.toggleLayer(id, type);
   }
 
-  function handleRemoveResource(id: number): void {
-    resourceTracking.remove(id);
+  function handleRemoveResource(
+    id: number,
+    type: "resource" | "enemy" = "resource",
+  ): void {
+    resourceTracking.remove(id, type);
   }
 
   function handleRegionsChange(): void {
