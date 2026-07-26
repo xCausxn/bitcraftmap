@@ -205,7 +205,7 @@ export function getSearchState() {
 		},
 
 		get results(): SearchResult[] {
-			return [...this.locationResults, ...this.creatureResults, ...this.resourceResults, ...this.playerResults];
+			return [...this.locationResults, ...this.layerResults, ...this.creatureResults, ...this.resourceResults, ...this.playerResults];
 		}
 	};
 }
