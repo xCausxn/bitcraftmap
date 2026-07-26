@@ -1081,7 +1081,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "1110001": {
         tier: 1,
-        name: "School Of Briny Argus",
+        name: "Dormant School Of Briny Argus",
         tag: "Lake Fish School"
     },
     "1110002": {
@@ -1141,7 +1141,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "2110001": {
         tier: 2,
-        name: "School Of Muddy Auratus",
+        name: "Dormant School of Muddy Auratus",
         tag: "Lake Fish School"
     },
     "2110002": {
@@ -1246,7 +1246,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "3110001": {
         tier: 3,
-        name: "School Of Greenhorn Dolo",
+        name: "Dormant School of Greenhorn Dolo",
         tag: "Lake Fish School"
     },
     "3110002": {
@@ -1331,7 +1331,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "4110001": {
         tier: 4,
-        name: "School Of Azure Sphyra",
+        name: "Dormant School of Azure Sphyra",
         tag: "Lake Fish School"
     },
     "4110002": {
@@ -1376,7 +1376,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "5110001": {
         tier: 5,
-        name: "School Of Rocky Doimaach",
+        name: "Dormant School of Rocky Doimaach",
         tag: "Lake Fish School"
     },
     "5110002": {
@@ -1394,6 +1394,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Armored Reef Clam",
         tag: "Mollusks"
     },
+    "6021784": {
+        tier: 2,
+        name: "Pineapple Bush",
+        tag: "Fruit Tree"
+    },
     "6110000": {
         tier: 6,
         name: "Vibrant Nano",
@@ -1401,7 +1406,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "6110001": {
         tier: 6,
-        name: "School Of Vibrant Carangi",
+        name: "Dormant School of Vibrant Carangi",
         tag: "Lake Fish School"
     },
     "6110002": {
@@ -1499,10 +1504,20 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Medium Ferralith Vein Interior Depleted",
         tag: "Ore Vein"
     },
+    "155980492": {
+        tier: 1,
+        name: "Silkmoth Swarm",
+        tag: "Uncharted Tailoring Resource"
+    },
     "158059491": {
         tier: -1,
         name: "King Jakyl Puppy Den",
         tag: "Monster Den"
+    },
+    "159322791": {
+        tier: 9,
+        name: "Baited Abyssal Nobilis Spot",
+        tag: "Lake Fish Spot"
     },
     "182331452": {
         tier: 1,
@@ -1539,6 +1554,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "King Jakyl Puppy Paw Imprints",
         tag: "Prospecting Clue"
     },
+    "230905381": {
+        tier: 8,
+        name: "Inactive Dorbel Pod",
+        tag: "Trophy Fishing Node"
+    },
     "233091253": {
         tier: -1,
         name: "Ancient Broken Bridge",
@@ -1548,6 +1568,21 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 6,
         name: "Rathium Vein Interior Depleted",
         tag: "Ore Vein"
+    },
+    "252230092": {
+        tier: -1,
+        name: "Depleted Silk Moth",
+        tag: "Uncharted Tailoring Resource"
+    },
+    "256671959": {
+        tier: 3,
+        name: "Old Anvil",
+        tag: "Uncharted Resource"
+    },
+    "278317122": {
+        tier: -1,
+        name: "Uncharted Shipment",
+        tag: "Sailing Cargo"
     },
     "284200468": {
         tier: 9,
@@ -1563,6 +1598,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Windswept Flower",
         tag: "Flower"
+    },
+    "320106707": {
+        tier: 2,
+        name: "Inactive Carbot Pod",
+        tag: "Trophy Fishing Node"
     },
     "322711580": {
         tier: 1,
@@ -1584,6 +1624,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Hexite Deposit",
         tag: "Hexite"
     },
+    "367785441": {
+        tier: 8,
+        name: "Hidden Murky Nemato Spot",
+        tag: "Lake Fish Spot"
+    },
     "368570220": {
         tier: 6,
         name: "Cranberry Bush",
@@ -1596,8 +1641,13 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "374159821": {
         tier: 10,
-        name: "School Of Divine Serra",
+        name: "Dormant School of Divine Serra",
         tag: "Lake Fish School"
+    },
+    "376372711": {
+        tier: -1,
+        name: "Hidden 7 Tiles Resource",
+        tag: "Hidden Resource"
     },
     "379219978": {
         tier: 3,
@@ -1608,6 +1658,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 2,
         name: "Giant Pumpkin Pile",
         tag: "Seasonal"
+    },
+    "384448308": {
+        tier: 9,
+        name: "Inactive Velgrim Pod",
+        tag: "Trophy Fishing Node"
     },
     "387666932": {
         tier: 7,
@@ -1649,6 +1704,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Disturbed Alpha Puppy Den",
         tag: "Monster Den"
     },
+    "440044897": {
+        tier: -1,
+        name: "Fully Stocked Study Desk",
+        tag: "Uncharted Scholar"
+    },
     "451150522": {
         tier: -1,
         name: "Beehive",
@@ -1658,6 +1718,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 8,
         name: "Pristine Sand",
         tag: "Sand"
+    },
+    "463864520": {
+        tier: 3,
+        name: "Beach Water Geyser",
+        tag: "Uncharted Resource"
     },
     "464034838": {
         tier: 2,
@@ -1684,6 +1749,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Well-Chummed Inactive Paranensis Pod",
         tag: "Paranensis"
     },
+    "483651994": {
+        tier: 5,
+        name: "Inactive Tharbel Pod",
+        tag: "Trophy Fishing Node"
+    },
     "487003651": {
         tier: 3,
         name: "Ancient Armor Rack",
@@ -1693,6 +1763,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Auric Ore",
         tag: "Ore Vein"
+    },
+    "499827637": {
+        tier: -1,
+        name: "Ice Chest",
+        tag: "Treasure"
     },
     "505488132": {
         tier: 8,
@@ -1821,13 +1896,18 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "722506673": {
         tier: 8,
-        name: "School Of Murky Nemato",
+        name: "Dormant School of Murky Nemato",
         tag: "Lake Fish School"
     },
     "723013812": {
         tier: 7,
         name: "Tier 7 Flower",
         tag: "Flower"
+    },
+    "729444410": {
+        tier: 3,
+        name: "Old Furnace",
+        tag: "Uncharted Resource"
     },
     "746946997": {
         tier: 2,
@@ -1859,6 +1939,16 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "TEST BirdSpawn",
         tag: "Stick"
     },
+    "769107383": {
+        tier: 6,
+        name: "Baited Vibrant Carangi Spot",
+        tag: "Lake Fish Spot"
+    },
+    "770389327": {
+        tier: -1,
+        name: "Immortal's Research Storage",
+        tag: "Uncharted Scholar"
+    },
     "773149133": {
         tier: 6,
         name: "Medium Rathium Vein Interior",
@@ -1879,10 +1969,20 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Elenvar Vein Interior Depleted",
         tag: "Ore Vein"
     },
+    "808355905": {
+        tier: 6,
+        name: "Baited School Of Vibrant Carangi",
+        tag: "Lake Fish School"
+    },
     "814703516": {
         tier: 9,
         name: "Umbracite Outcrop Interior",
         tag: "Ore Vein"
+    },
+    "817308838": {
+        tier: 7,
+        name: "Baited School Of Mossy Synan",
+        tag: "Lake Fish School"
     },
     "822745882": {
         tier: 3,
@@ -1893,6 +1993,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 7,
         name: "Frenzied School Of Mossy Amia",
         tag: "Chummed Ocean Fish School"
+    },
+    "828646787": {
+        tier: 7,
+        name: "Inactive Garbel Pod",
+        tag: "Trophy Fishing Node"
     },
     "834195042": {
         tier: 7,
@@ -1908,6 +2013,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Depleted Hexite Deposit",
         tag: "Hexite"
+    },
+    "859772632": {
+        tier: 4,
+        name: "Baited Azure Sphyra Spot",
+        tag: "Lake Fish Spot"
     },
     "868500054": {
         tier: -1,
@@ -1936,7 +2046,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "904022325": {
         tier: 7,
-        name: "School Of Mossy Synan",
+        name: "Dormant School of Mossy Synan",
         tag: "Lake Fish School"
     },
     "906346149": {
@@ -1944,10 +2054,30 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Sparkstone Ore",
         tag: "Hardened Ore Node"
     },
+    "908226880": {
+        tier: -1,
+        name: "Uncharted Monument",
+        tag: "Uncharted Scholar"
+    },
+    "910147429": {
+        tier: -1,
+        name: "Empty Study Desk",
+        tag: "Uncharted Scholar"
+    },
+    "915617852": {
+        tier: 7,
+        name: "Hidden Mossy Synan Spot",
+        tag: "Lake Fish Spot"
+    },
     "916586661": {
         tier: 6,
         name: "Rathium Outcrop Interior",
         tag: "Ore Vein"
+    },
+    "925275042": {
+        tier: 1,
+        name: "Oyster Shell",
+        tag: "Summer Resource"
     },
     "932989637": {
         tier: 6,
@@ -1974,10 +2104,20 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Grand Treasure Chest",
         tag: "Treasure"
     },
+    "956829437": {
+        tier: 6,
+        name: "Inactive Corven Pod",
+        tag: "Trophy Fishing Node"
+    },
     "963451338": {
         tier: 9,
         name: "Magnificent Berry Bush",
         tag: "Berry"
+    },
+    "976413177": {
+        tier: -1,
+        name: "Open Uncharted Shipment",
+        tag: "Sailing Cargo"
     },
     "986344159": {
         tier: 3,
@@ -1999,15 +2139,30 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Elephant Fibers",
         tag: "Fiber Plant"
     },
+    "1005820274": {
+        tier: 5,
+        name: "Baited School Of Rocky Doimaach",
+        tag: "Lake Fish School"
+    },
     "1006230316": {
         tier: 10,
         name: "Frenzied School Of Divine Selachii",
         tag: "Chummed Ocean Fish School"
     },
+    "1023037075": {
+        tier: 3,
+        name: "Baited School Of Greenhorn Dolo",
+        tag: "Lake Fish School"
+    },
     "1023127595": {
         tier: 10,
         name: "Flawless Clay",
         tag: "Clay"
+    },
+    "1027707457": {
+        tier: 10,
+        name: "Baited School Of Divine Serra",
+        tag: "Lake Fish School"
     },
     "1040719110": {
         tier: -1,
@@ -2023,6 +2178,16 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 2,
         name: "Pyrelite Outcrop Interior",
         tag: "Ore Vein"
+    },
+    "1048834532": {
+        tier: 10,
+        name: "Inactive Naskel Pod",
+        tag: "Trophy Fishing Node"
+    },
+    "1062382109": {
+        tier: 9,
+        name: "Hidden Abyssal Nobilis Spot",
+        tag: "Lake Fish Spot"
     },
     "1064484466": {
         tier: 3,
@@ -2048,6 +2213,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Injured Cervus",
         tag: "Injured Animal"
+    },
+    "1084956366": {
+        tier: -1,
+        name: "Lost Pirate's Treasure",
+        tag: "Treasure"
     },
     "1091832489": {
         tier: -1,
@@ -2111,7 +2281,7 @@ export const resourceIndex: ResourceIndex = { // Generated array
     },
     "1157887989": {
         tier: 9,
-        name: "School Of Abyssal Nobilis",
+        name: "Dormant School of Abyssal Nobilis",
         tag: "Lake Fish School"
     },
     "1158906419": {
@@ -2154,6 +2324,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Ancient Brick Pile",
         tag: "Ruin Resource"
     },
+    "1225153871": {
+        tier: -1,
+        name: "Starseeker's Research Storage",
+        tag: "Uncharted Scholar"
+    },
     "1235656080": {
         tier: -1,
         name: "Hidden Resource",
@@ -2169,10 +2344,20 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Umbracite Outcrop Interior Depleted",
         tag: "Ore Vein"
     },
+    "1245200288": {
+        tier: 10,
+        name: "Baited Divine Serra Spot",
+        tag: "Lake Fish Spot"
+    },
     "1250777859": {
         tier: -1,
         name: "Lava Pool",
         tag: "Lava"
+    },
+    "1255593240": {
+        tier: -1,
+        name: "Futuremaker's Research Storage",
+        tag: "Uncharted Scholar"
     },
     "1260515599": {
         tier: 3,
@@ -2219,6 +2404,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Traveler's Tree",
         tag: "Wonder Resource"
     },
+    "1307591988": {
+        tier: 10,
+        name: "Hidden Divine Serra Spot",
+        tag: "Lake Fish Spot"
+    },
     "1318826480": {
         tier: 6,
         name: "Rathium Outcrop Interior Depleted",
@@ -2264,6 +2454,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Windstream",
         tag: "Quest Resource"
     },
+    "1376234165": {
+        tier: 3,
+        name: "Hidden Greenhorn Dolo Spot",
+        tag: "Lake Fish Spot"
+    },
     "1384187835": {
         tier: -1,
         name: "Hexite Sealed Vault (Four Locks Broken)",
@@ -2304,6 +2499,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Large Gift Pile",
         tag: "Seasonal"
     },
+    "1427096797": {
+        tier: 3,
+        name: "Pirate's Footlocker",
+        tag: "Uncharted Resource"
+    },
     "1435874592": {
         tier: 1,
         name: "Traveler's Tree (Depleted)",
@@ -2323,6 +2523,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 10,
         name: "Medium Astralite Vein Interior",
         tag: "Ore Vein"
+    },
+    "1458193337": {
+        tier: 6,
+        name: "Hidden Vibrant Carangi Spot",
+        tag: "Lake Fish Spot"
     },
     "1458811602": {
         tier: 9,
@@ -2354,6 +2559,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Tier 10 Fibers",
         tag: "Fiber Plant"
     },
+    "1500289490": {
+        tier: -1,
+        name: "Partially Stocked Study Desk",
+        tag: "Uncharted Scholar"
+    },
     "1502935362": {
         tier: -1,
         name: "Hexite Sealed Vault (Two Locks Broken)",
@@ -2379,10 +2589,20 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Pumpkin",
         tag: "Seasonal"
     },
+    "1554989778": {
+        tier: 1,
+        name: "Hidden Briny Argus Spot",
+        tag: "Lake Fish Spot"
+    },
     "1558728865": {
         tier: 8,
         name: "Murky Chub",
         tag: "Baitfish"
+    },
+    "1559345906": {
+        tier: 1,
+        name: "Inactive Trask Pod",
+        tag: "Trophy Fishing Node"
     },
     "1565420196": {
         tier: 1,
@@ -2414,6 +2634,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Yellow Apricot Bush",
         tag: "Berry"
     },
+    "1592653082": {
+        tier: 4,
+        name: "Hidden Azure Sphyra Spot",
+        tag: "Lake Fish Spot"
+    },
     "1592739620": {
         tier: 8,
         name: "Pristine Berry Bush",
@@ -2424,6 +2649,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Astralite Vein",
         tag: "Ore Vein"
     },
+    "1613056504": {
+        tier: 3,
+        name: "Inactive Murrel Pod",
+        tag: "Trophy Fishing Node"
+    },
     "1619369727": {
         tier: 2,
         name: "Pyrelite Vein Interior",
@@ -2433,6 +2663,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Depleted Ancient Pots",
         tag: "Depleted Resource"
+    },
+    "1626015312": {
+        tier: 3,
+        name: "Driftwood",
+        tag: "Wood"
     },
     "1637125903": {
         tier: 10,
@@ -2469,10 +2704,25 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Aurumite Outcrop Interior Depleted",
         tag: "Ore Vein"
     },
+    "1690549080": {
+        tier: 3,
+        name: "Overgrown Loom",
+        tag: "Uncharted Resource"
+    },
     "1691492474": {
         tier: 5,
         name: "Coral Sand",
         tag: "Sand"
+    },
+    "1693390912": {
+        tier: -1,
+        name: "Rumbagh's Spare Ink",
+        tag: "Uncharted Scholar"
+    },
+    "1696878184": {
+        tier: 4,
+        name: "Baited School Of Azure Sphyra",
+        tag: "Lake Fish School"
     },
     "1697992551": {
         tier: 4,
@@ -2529,6 +2779,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Inactive Paranensis Pod",
         tag: "Paranensis"
     },
+    "1791475915": {
+        tier: 1,
+        name: "Baited Briny Argus Spot",
+        tag: "Lake Fish Spot"
+    },
     "1800013378": {
         tier: 7,
         name: "Medium Aurumite Vein Interior",
@@ -2564,15 +2819,40 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Pyrelite Outcrop Interior Depleted",
         tag: "Ore Vein"
     },
+    "1831266605": {
+        tier: 4,
+        name: "Banana Tree",
+        tag: "Fruit Tree"
+    },
+    "1831667492": {
+        tier: 7,
+        name: "Baited Mossy Synan Spot",
+        tag: "Lake Fish Spot"
+    },
+    "1840475867": {
+        tier: -1,
+        name: "Rumbagh's Spare Parchment",
+        tag: "Uncharted Scholar"
+    },
     "1842369948": {
         tier: 2,
         name: "Medium Pyrelite Vein Interior Depleted",
         tag: "Ore Vein"
     },
+    "1885803555": {
+        tier: 8,
+        name: "Baited Murky Nemato Spot",
+        tag: "Lake Fish Spot"
+    },
     "1886066214": {
         tier: -1,
         name: "Depleted Ancient Chest",
         tag: "Depleted Resource"
+    },
+    "1902575241": {
+        tier: 2,
+        name: "Hidden Muddy Auratus Spot",
+        tag: "Lake Fish Spot"
     },
     "1902966974": {
         tier: 9,
@@ -2599,10 +2879,30 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Collapsed Ruin Bridge",
         tag: "Profession Dungeon Resource"
     },
+    "1939036936": {
+        tier: 1,
+        name: "Oyster Shell Open",
+        tag: "Summer Resource"
+    },
+    "1939455158": {
+        tier: 5,
+        name: "Baited Rocky Doimaach Spot",
+        tag: "Lake Fish Spot"
+    },
+    "1946631068": {
+        tier: 8,
+        name: "Baited School Of Murky Nemato",
+        tag: "Lake Fish School"
+    },
     "1954847232": {
         tier: 9,
         name: "Black Fig Bush",
         tag: "Berry"
+    },
+    "1955898021": {
+        tier: 3,
+        name: "Baited Greenhorn Dolo Spot",
+        tag: "Lake Fish Spot"
     },
     "1962517199": {
         tier: 1,
@@ -2613,6 +2913,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Open Hexite Sealed Vault (One Lock Broken)",
         tag: "World Event"
+    },
+    "1977811738": {
+        tier: 1,
+        name: "Packed Ice",
+        tag: "Summer Resource"
     },
     "1978029892": {
         tier: -1,
@@ -2639,6 +2944,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Tier 10 Flower",
         tag: "Flower"
     },
+    "1989268569": {
+        tier: -1,
+        name: "Hidden 38 Tiles Resource",
+        tag: "Hidden Resource"
+    },
     "1996631377": {
         tier: 10,
         name: "Tier 10 Outcrop",
@@ -2648,6 +2958,21 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 4,
         name: "Unreasonably Chummed Paranensis Pod",
         tag: "Paranensis"
+    },
+    "1999842598": {
+        tier: 4,
+        name: "Inactive Varkel Pod",
+        tag: "Trophy Fishing Node"
+    },
+    "2004989308": {
+        tier: -1,
+        name: "Shipwreck Steering Wheel",
+        tag: "Shipwreck Materials"
+    },
+    "2013555925": {
+        tier: 2,
+        name: "Baited Muddy Auratus Spot",
+        tag: "Lake Fish Spot"
     },
     "2018876609": {
         tier: 4,
@@ -2679,10 +3004,25 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Aurumite Vein Interior",
         tag: "Ore Vein"
     },
+    "2055102471": {
+        tier: -1,
+        name: "Shipwreck Woodpile",
+        tag: "Shipwreck Materials"
+    },
     "2058007491": {
         tier: 2,
         name: "Beach Sand",
         tag: "Sand"
+    },
+    "2064671495": {
+        tier: 1,
+        name: "Baited School Of Briny Argus",
+        tag: "Lake Fish School"
+    },
+    "2065399163": {
+        tier: 5,
+        name: "Hidden Rocky Doimaach Spot",
+        tag: "Lake Fish Spot"
     },
     "2066552867": {
         tier: 4,
@@ -2709,6 +3049,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         name: "Enoki",
         tag: "Mushroom"
     },
+    "2089325907": {
+        tier: 2,
+        name: "Baited School Of Muddy Auratus",
+        tag: "Lake Fish School"
+    },
     "2104975743": {
         tier: 7,
         name: "Tier 7 Outcrop",
@@ -2718,6 +3063,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: 10,
         name: "Flawless Berry Bush",
         tag: "Berry"
+    },
+    "2111113095": {
+        tier: 3,
+        name: "Beach Whetstone",
+        tag: "Uncharted Resource"
     },
     "2124433785": {
         tier: -1,
@@ -2758,6 +3108,11 @@ export const resourceIndex: ResourceIndex = { // Generated array
         tier: -1,
         name: "Jakyl Den",
         tag: "Monster Den"
+    },
+    "2146782542": {
+        tier: 9,
+        name: "Baited School Of Abyssal Nobilis",
+        tag: "Lake Fish School"
     },
 };
 
