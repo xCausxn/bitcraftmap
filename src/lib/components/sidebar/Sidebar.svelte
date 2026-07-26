@@ -100,13 +100,14 @@
 				{:else if sidebar.activeTab === 'features'}
 					<LayerPanel {genericToggle} {isActive} onToggle={onToggleLayer} />
 				{:else if sidebar.activeTab === 'tracking'}
+					<RegionSelector {onRegionsChange} />
+					<div class="pb-3"></div>
 					<TrackingPanel
 						{onToggleResource}
 						{onTogglePlayer}
 						{onRemoveResource}
 						{onRemovePlayer}
 					/>
-					<RegionSelector {onRegionsChange} />
 				{:else if sidebar.activeTab === 'settings'}
 					<SettingsPanel />
 				{/if}
