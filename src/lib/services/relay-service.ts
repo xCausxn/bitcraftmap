@@ -34,6 +34,7 @@ import {
   EnemyType,
   type EventContext,
   type LocationState,
+  type MobileEntityState,
 } from "$lib/relay-bindings";
 
 // ---------------------------------------------------------------------------
@@ -114,19 +115,10 @@ const SQL = {
 // Tracked state
 // ---------------------------------------------------------------------------
 
-/** Legacy wire shape kept from the old live.bitjita.com feed so the marker
- * layer is unchanged. Values are mobile coords (small hex tile * 1000). */
-export interface RelayPlayerState {
-  entity_id: string;
-  location_x: number;
-  location_z: number;
-  destination_x: number;
-  destination_z: number;
-}
-
 export interface PlayerUpdateEvent {
   entityId: string;
-  state?: RelayPlayerState;
+  /** Position row straight from the bindings; coords are small hex tile * 1000. */
+  state?: MobileEntityState;
   username?: string;
   online?: boolean;
 }
@@ -377,26 +369,9 @@ function registerRowCallbacks(rc: RegionConn): void {
   db.enemyMobMonitorState.onDelete(onEnemyRow);
 
   // Player rows: forward to the tracked player's callback.
-  const emitState = (_ctx: EventContext, row: {
-    entityId: bigint;
-    locationX: number;
-    locationZ: number;
-    destinationX: number;
-    destinationZ: number;
-  }) => {
+  const emitState = (_ctx: EventContext, row: MobileEntityState) => {
     const id = String(row.entityId);
-    const cb = trackedPlayers.get(id);
-    if (!cb) return;
-    cb({
-      entityId: id,
-      state: {
-        entity_id: id,
-        location_x: row.locationX,
-        location_z: row.locationZ,
-        destination_x: row.destinationX,
-        destination_z: row.destinationZ,
-      },
-    });
+    trackedPlayers.get(id)?.({ entityId: id, state: row });
   };
   db.mobileEntityState.onInsert(emitState);
   db.mobileEntityState.onUpdate((ctx, _old, row) => emitState(ctx, row));

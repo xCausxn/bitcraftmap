@@ -4,9 +4,9 @@ import { buildPopupHtml } from "./popup-builder";
 import {
   relayTrackPlayer,
   relayUntrackPlayer,
-  type RelayPlayerState,
   type PlayerUpdateEvent,
 } from "$lib/services/relay-service";
+import type { MobileEntityState } from "$lib/relay-bindings";
 import {
   addTrackingItem,
   loadColorPreference,
@@ -179,18 +179,19 @@ export class PlayerTracking {
   }
 
   private updateMarker(
-    state: RelayPlayerState,
+    state: MobileEntityState,
     followPlayer: boolean,
     color = "#00ff00",
   ): void {
-    const playerId = state.entity_id;
+    const playerId = String(state.entityId);
+    // mobile_entity_state coords are small hex tile * 1000 — the map's grid scaled.
     const playerLatLng = L.latLng(
-      state.location_z / 1000,
-      state.location_x / 1000,
+      state.locationZ / 1000,
+      state.locationX / 1000,
     );
     const destLatLng = L.latLng(
-      state.destination_z / 1000,
-      state.destination_x / 1000,
+      state.destinationZ / 1000,
+      state.destinationX / 1000,
     );
     const directionLine: L.LatLngExpression[] = [playerLatLng, destLatLng];
 
