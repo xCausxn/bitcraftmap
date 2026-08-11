@@ -277,6 +277,12 @@ export function updateTrackingItemColor(id: number, type: 'enemy' | 'resource', 
 	if (item?.type) colorSyncHandler?.(item.type, id, color);
 }
 
+/** Update a player item's label once the username arrives from the relay. */
+export function updateTrackingItemTextByEntityId(entityId: string, text: string): void {
+	items = items.map((i) => (i.entityId === entityId ? { ...i, text } : i));
+	saveDisplayName('player', entityId, text);
+}
+
 export function updateTrackingItemColorByEntityId(entityId: string, color: string): void {
 	if (!isValidColor(color)) return;
 	saveColorPreference('player', entityId, color);

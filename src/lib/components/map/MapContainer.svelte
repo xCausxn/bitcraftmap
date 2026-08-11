@@ -54,15 +54,7 @@
     resourceIndexOverride,
   } from "$lib/data/resource-index";
   import { getLatestGistRaw } from "$lib/services/gist-service";
-  import {
-    setResourceEventCallback,
-    closeResourceWebSocket,
-  } from "$lib/services/websocket-service";
-  import {
-    handleResourceEvent,
-    cancelAllPendingRefetches,
-    type ResourceUpdateContext,
-  } from "$lib/services/resource-update-handler";
+  import { relayDispose } from "$lib/services/relay-service";
   import { setSelection } from "$lib/stores/selection-store.svelte";
   import { addLayerEntries } from "$lib/stores/search-store.svelte";
 
@@ -112,13 +104,6 @@
     const enabled = getLodEnabled();
     resourceTracking?.setLodEnabled(enabled);
   });
-
-  const resourceUpdateCtx: ResourceUpdateContext = {
-    get resourceLayers() {
-      return resourceTracking.resourceLayers;
-    },
-    getActiveRegions: () => regionState.effectiveRegions,
-  };
 
   // Context for child components
   let paintCtx: PaintContext;
@@ -258,11 +243,6 @@
 
     mapReady = true;
 
-    // Wire up resource WebSocket event handler
-    setResourceEventCallback((event) => {
-      handleResourceEvent(event, resourceUpdateCtx);
-    });
-
     const unregisterColorSync = registerColorSyncHandler((type, id, color) => {
       if (type === "player") {
         playerTracking.setMarkerColor(id as string, color);
@@ -274,8 +254,7 @@
     return () => {
       unregisterColorSync();
       playerTracking.dispose();
-      closeResourceWebSocket();
-      cancelAllPendingRefetches();
+      relayDispose();
       map.remove();
     };
   });

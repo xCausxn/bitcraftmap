@@ -1,0 +1,4 @@
+[submodule "vendor/bitcraft-bindings"]
+	path = vendor/bitcraft-bindings
+	url = https://github.com/BitCraftToolBox/BitCraft_Bindings.git
+	branch = ts-region

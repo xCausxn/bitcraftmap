@@ -16,9 +16,9 @@ export interface MapConfig {
 }
 
 export interface AppConfig {
-	backendUrl: string;
 	gistApi: string;
-	websocketUrl: string;
+	/** SpacetimeDB relay origin; region N is module `bitcraft-live-{N}`. */
+	relayHost: string;
 	exportsCdn: string;
 }
 

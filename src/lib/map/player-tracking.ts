@@ -2,13 +2,15 @@ import L from "leaflet";
 import { setSelection } from "$lib/stores/selection-store.svelte";
 import { buildPopupHtml } from "./popup-builder";
 import {
-  connectWebSocket,
-  type PlayerState,
-} from "$lib/services/websocket-service";
-import { lookupPlayer } from "$lib/services/player-service";
+  relayTrackPlayer,
+  relayUntrackPlayer,
+  type RelayPlayerState,
+  type PlayerUpdateEvent,
+} from "$lib/services/relay-service";
 import {
   addTrackingItem,
   loadColorPreference,
+  updateTrackingItemTextByEntityId,
 } from "$lib/stores/tracking-store.svelte";
 import { updatePlayerIdParam } from "$lib/utils/url-params";
 import type { TrackOptions } from "./resource-tracking";
@@ -37,7 +39,6 @@ function createPlayerIcon(color: string): L.DivIcon {
 export class PlayerTracking {
   private playerStore = new Map<string, L.Marker>();
   private destinationStore = new Map<string, L.Polyline>();
-  private playerWebSockets = new Map<string, WebSocket>();
   private trackedPlayerIds = new Set<string>();
   private playerUsernames = new Map<string, string>();
   private colorIndex = 0;
@@ -58,68 +59,15 @@ export class PlayerTracking {
       this.followingPlayerId = playerIds[0];
     }
     for (const id of playerIds) {
+      if (this.trackedPlayerIds.has(id)) continue;
       this.trackedPlayerIds.add(id);
-    }
-
-    // Fetch player info once for initial markers + tracking items
-    const playerInfoPromise = Promise.all(
-      playerIds.map((id) => lookupPlayer(id)),
-    );
-
-    playerInfoPromise.then((results) => {
-      results.forEach((info, i) => {
-        this.playerUsernames.set(playerIds[i], info.username);
-        if (info.locationX !== null && info.locationZ !== null) {
-          this.updateMarker(
-            {
-              entity_id: playerIds[i],
-              location_x: info.locationX,
-              location_z: info.locationZ,
-              destination_x: info.locationX,
-              destination_z: info.locationZ,
-            },
-            this.followingPlayerId === playerIds[i],
-            loadColorPreference("player", playerIds[i]) || "#00ff00",
-          );
-        }
-      });
-    });
-
-    const ws = connectWebSocket(
-      playerIds,
-      (state: PlayerState) => {
-        this.updateMarker(
-          state,
-          this.followingPlayerId === state.entity_id,
-          loadColorPreference("player", state.entity_id) || "#00ff00",
-        );
-      },
-      () => {
-        playerInfoPromise.then((results) => {
-          playerIds.forEach((id, i) => {
-            const savedColor = loadColorPreference("player", id);
-            addTrackingItem({
-              id: -1,
-              entityId: id,
-              type: "player",
-              text: `Player: ${results[i].username}`,
-              color: savedColor || "#00ff00",
-              visible: true,
-            });
-          });
-        });
-      },
-    );
-    if (ws) {
-      for (const id of playerIds) {
-        this.playerWebSockets.set(id, ws);
-      }
+      this.startTracking(id, loadColorPreference("player", id) || "#00ff00");
     }
   }
 
   /**
-   * @param username Display name if already known; otherwise it is resolved
-   *   from the player lookup.
+   * @param username Display name if already known; otherwise it arrives with
+   *   the relay's player_username_state row.
    */
   async track(
     entityId: string,
@@ -140,47 +88,40 @@ export class PlayerTracking {
       ? "#3388ff"
       : loadColorPreference("player", entityId) || paletteColor;
 
-    // Fetch initial location from API
-    const playerInfo = await lookupPlayer(entityId);
-    if (!username) this.playerUsernames.set(entityId, playerInfo.username);
-    if (playerInfo.locationX !== null && playerInfo.locationZ !== null) {
-      this.updateMarker(
-        {
-          entity_id: entityId,
-          location_x: playerInfo.locationX,
-          location_z: playerInfo.locationZ,
-          destination_x: playerInfo.locationX,
-          destination_z: playerInfo.locationZ,
-        },
-        this.followingPlayerId === entityId,
-        color,
-      );
-    }
+    this.startTracking(entityId, color);
+  }
 
-    const ws = connectWebSocket(
-      [entityId],
-      (state: PlayerState) => {
+  /**
+   * Subscribe to the player's relay rows. The initial position, username and
+   * online flag arrive through the same callback as later movement, so the
+   * marker and the tracking-item label fill in as rows land.
+   */
+  private startTracking(entityId: string, color: string): void {
+    addTrackingItem({
+      id: -1,
+      entityId,
+      type: "player",
+      text: `Player: ${this.playerUsernames.get(entityId) ?? entityId}`,
+      color,
+      visible: true,
+    });
+
+    relayTrackPlayer(entityId, (event: PlayerUpdateEvent) => {
+      if (
+        event.username &&
+        event.username !== this.playerUsernames.get(entityId)
+      ) {
+        this.playerUsernames.set(entityId, event.username);
+        updateTrackingItemTextByEntityId(entityId, `Player: ${event.username}`);
+      }
+      if (event.state) {
         this.updateMarker(
-          state,
-          this.followingPlayerId === state.entity_id,
+          event.state,
+          this.followingPlayerId === entityId,
           loadColorPreference("player", entityId) || color,
         );
-      },
-      () => {
-        addTrackingItem({
-          id: -1,
-          entityId,
-          type: "player",
-          text: `Player: ${playerInfo.username}`,
-          color,
-          visible: true,
-        });
-      },
-    );
-
-    if (ws) {
-      this.playerWebSockets.set(entityId, ws);
-    }
+      }
+    });
   }
 
   /** Follow this player, or stop following if they are already followed. */
@@ -221,12 +162,7 @@ export class PlayerTracking {
     this.destinationStore.delete(entityId);
     this.playerUsernames.delete(entityId);
 
-    // Close WebSocket
-    const ws = this.playerWebSockets.get(entityId);
-    if (ws) {
-      ws.close();
-      this.playerWebSockets.delete(entityId);
-    }
+    relayUntrackPlayer(entityId);
     this.trackedPlayerIds.delete(entityId);
     updatePlayerIdParam(this.trackedPlayerIds);
   }
@@ -243,7 +179,7 @@ export class PlayerTracking {
   }
 
   private updateMarker(
-    state: PlayerState,
+    state: RelayPlayerState,
     followPlayer: boolean,
     color = "#00ff00",
   ): void {
@@ -288,6 +224,10 @@ export class PlayerTracking {
           lng: marker.getLatLng().lng,
         };
         selectionData.isFollowing = this.followingPlayerId === playerId;
+        // The username may have arrived after the marker was created.
+        const name = this.playerUsernames.get(playerId) ?? playerId;
+        selectionData.name = name;
+        selectionData.username = name;
         setSelection(selectionData);
         marker.setPopupContent(
           buildPopupHtml(selectionData, this.map.getZoom()),
@@ -315,8 +255,8 @@ export class PlayerTracking {
   }
 
   dispose(): void {
-    for (const ws of this.playerWebSockets.values()) {
-      ws.close();
+    for (const id of this.trackedPlayerIds) {
+      relayUntrackPlayer(id);
     }
   }
 }
